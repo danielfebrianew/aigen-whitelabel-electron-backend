@@ -1,6 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany, Index } from 'typeorm';
 import { VideoResult } from './video-result.entity';
 
+export enum VideoJobStatus {
+  PROCESSING = 'processing',
+  SUCCESS    = 'success',
+  FAILED     = 'failed',
+}
+
 @Entity('video_jobs')
 export class VideoJob {
   @PrimaryGeneratedColumn('uuid')
@@ -33,6 +39,12 @@ export class VideoJob {
 
   @Column({ name: 'thumbnail_url', length: 500, nullable: true })
   thumbnailUrl: string;
+
+  @Column({ name: 'is_pro', default: false })
+  isPro: boolean;
+
+  @Column({ type: 'enum', enum: VideoJobStatus, default: VideoJobStatus.PROCESSING })
+  status: VideoJobStatus;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

@@ -10,6 +10,8 @@ import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis'
 import Redis from 'ioredis';
 import { GalleryModule } from './gallery/gallery.module';
 import { GenerateImageModule } from './generate-image/generate-image.module';
+import { GenerateProModule } from './generate-pro/generate-pro.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -66,6 +68,8 @@ import { GenerateImageModule } from './generate-image/generate-image.module';
     GenerateImageModule,
     VideoMixerModule,
     GalleryModule,
+    GenerateProModule,
+    NotificationsModule,
   ],
   controllers: [],
   providers: [{

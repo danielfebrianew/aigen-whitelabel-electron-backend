@@ -3,9 +3,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI } from '@google/genai';
-import { GeminiImageGenService } from './services/gemini-image-gen.service';
+import { GeminiImageGenService } from './services/kie-image-gen.service';
 import { AwsStorageService } from './services/aws-storage.service';
-import { OpenAiPromptService } from './services/openai-prompt.service';
+import { OpenAiPromptService } from './services/gemini-prompt.service';
 import {
   GenerateImageRequestDto,
   GenerateImageResponse,
@@ -53,6 +53,16 @@ export class GenerateImageService {
 
     this.logger.log(`[${jobId}] Background resolved: "${background}"`);
 
+    // ─── Step 1.5: Upload product image to S3 for Kie.ai image_input ──
+    const productExt = files.productImage.mimetype.split('/')[1] || 'jpg';
+    const productImageUrl = await this.awsStorageService.uploadFile(
+      files.productImage.buffer,
+      `product-ref.${productExt}`,
+      files.productImage.mimetype,
+      `generated-images/${jobId}`,
+    );
+    this.logger.log(`[${jobId}] Product image uploaded → ${productImageUrl}`);
+
     // ─── Step 2: Generate 6 prompts via OpenAI ─────────────────────
     // GPT-4o lihat foto produk (+ model), bikin 6 prompt yang disesuaikan.
     const photoPrompts = await this.openAiPromptService.generatePhotoPrompts({
@@ -78,6 +88,7 @@ export class GenerateImageService {
         variantNumber: index + 1,
         modelBase64,
         productBase64,
+        productImageUrl,
       }),
     );
 
@@ -107,15 +118,17 @@ export class GenerateImageService {
     variantNumber: number;
     modelBase64: string | null;
     productBase64: string;
+    productImageUrl?: string;
   }): Promise<ImageVariant> {
     try {
       this.logger.log(`[${params.jobId}] Variant ${params.variantNumber}: "${params.title}"`);
 
-      // Kirim ke Gemini — prompt sudah lengkap dari OpenAI
+      // Kirim ke Kie.ai — prompt sudah lengkap dari OpenAI
       const imageBuffer = await this.geminiImageGenService.generateImage({
         prompt: params.prompt,
         modelBase64: params.modelBase64,
         productBase64: params.productBase64,
+        productImageUrl: params.productImageUrl,
       });
 
       // Upload ke S3

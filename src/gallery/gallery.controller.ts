@@ -14,10 +14,13 @@ export class GalleryController {
     async getJobs(
         @Query('page') page: string,
         @Query('limit') limit: string,
+        @Query('type') type: string,
     ) {
+        const jobType = type === 'pro' || type === 'standard' ? type : undefined;
         return this.galleryService.findAllJobs(
             Number(page) || 1,
             Number(limit) || 30,
+            jobType,
         );
     }
 
