@@ -4,7 +4,8 @@
       "Bash(find:*)",
       "Bash(npm run build:*)",
       "Bash(findstr:*)",
-      "Bash(ffmpeg:*)"
+      "Bash(ffmpeg:*)",
+      "Bash(npx jest --testPathPatterns=\"generate-video\" --no-coverage)"
     ]
   }
 }

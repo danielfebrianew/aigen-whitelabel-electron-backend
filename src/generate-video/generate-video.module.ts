@@ -6,7 +6,7 @@ import { VideoUtilsHelper } from './helpers/video-utils.helper';
 import { AwsStorageService } from './services/aws-storage.service';
 import { OpenAiScriptService } from './services/openai-script.service';
 import { WavespeedVideoService } from './services/wavespeed-video.service';
-import { GeminiTtsService } from './services/gemini-tts.service';
+import { ElevenLabsTtsService } from './services/elevenlabs-tts.service';
 import { FfmpegMixService } from './services/ffmpeg-mixer.service';
 import { GalleryModule } from 'src/gallery/gallery.module';
 
@@ -19,7 +19,7 @@ import { GalleryModule } from 'src/gallery/gallery.module';
     AwsStorageService,
     OpenAiScriptService,
     WavespeedVideoService,
-    GeminiTtsService,
+    ElevenLabsTtsService,
     FfmpegMixService,
   ],
 })

@@ -6,7 +6,7 @@ import * as path from 'path';
 import { AwsStorageService } from './services/aws-storage.service';
 import { OpenAiScriptService } from './services/openai-script.service';
 import { WavespeedVideoService } from './services/wavespeed-video.service';
-import { GeminiTtsService } from './services/gemini-tts.service';
+import { ElevenLabsTtsService } from './services/elevenlabs-tts.service';
 import { FfmpegMixService } from './services/ffmpeg-mixer.service';
 import { VideoUtilsHelper } from './helpers/video-utils.helper';
 import { GalleryService } from 'src/gallery/gallery.service';
@@ -22,7 +22,7 @@ export class GenerateAiService implements OnModuleInit {
     private awsStorage: AwsStorageService,
     private openaiScript: OpenAiScriptService,
     private wavespeedVideo: WavespeedVideoService,
-    private geminiTts: GeminiTtsService,
+    private elevenlabsTts: ElevenLabsTtsService,
     private ffmpegMix: FfmpegMixService,
     private galleryService: GalleryService,
   ) {
@@ -38,7 +38,7 @@ export class GenerateAiService implements OnModuleInit {
       if (!fs.existsSync(this.tempDir)) return;
       const files = fs.readdirSync(this.tempDir);
       for (const file of files) {
-        if (file.endsWith('.mp4') || file.endsWith('.zip') || file.endsWith('.wav')) {
+        if (file.endsWith('.mp4') || file.endsWith('.zip') || file.endsWith('.wav') || file.endsWith('.mp3')) {
           fs.unlinkSync(path.join(this.tempDir, file));
         }
       }
@@ -80,13 +80,13 @@ export class GenerateAiService implements OnModuleInit {
     const promptCount = prompts.length;
 
     // --- LOGIC RANDOM VOICE PICKER ---
-    let voiceName = 'Achernar'; 
+    let voiceName = 'Rachel';
 
     if (voiceGender === 'male') {
-      const maleVoices = ['Alnilam', 'Achird', 'Zubenelgenubi'];
+      const maleVoices = ['Roger', 'Charlie', 'George', 'Callum', 'Liam', 'Chris', 'Brian', 'Daniel'];
       voiceName = maleVoices[Math.floor(Math.random() * maleVoices.length)];
     } else {
-      const femaleVoices = ['Achernar', 'Zephyr', 'Sulafat'];
+      const femaleVoices = ['Rachel', 'Sarah', 'Laura', 'Charlotte', 'Jessica', 'Lily', 'Alice', 'Matilda'];
       voiceName = femaleVoices[Math.floor(Math.random() * femaleVoices.length)];
     }
 
@@ -139,7 +139,7 @@ export class GenerateAiService implements OnModuleInit {
       //  STEP 3: Generate audio in parallel (5-15%)
       this.logProgress(jobId, "Generating voiceover...", 10);
 
-      const audioTask = this.geminiTts.generateAudio(script, this.tempDir, voiceName);
+      const audioTask = this.elevenlabsTts.generateAudio(script, this.tempDir, voiceName);
 
       const [videoResults, audioPath] = await Promise.all([
         Promise.all(videoTasks),
