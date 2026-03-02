@@ -1,10 +1,25 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import ffmpeg from 'fluent-ffmpeg';
 import { VideoUtilsHelper } from '../helpers/video-utils.helper';
 
 @Injectable()
 export class FfmpegMixService {
-  constructor(private videoUtilsHelper: VideoUtilsHelper) {}
+  constructor(
+    private videoUtilsHelper: VideoUtilsHelper,
+    private configService: ConfigService, // Inject ConfigService
+  ) {
+    // Ambil path menggunakan ConfigService
+    const ffmpegPath = this.configService.get<string>('FFMPEG_PATH');
+    const ffprobePath = this.configService.get<string>('FFPROBE_PATH');
+
+    if (ffmpegPath) {
+      ffmpeg.setFfmpegPath(ffmpegPath);
+    }
+    if (ffprobePath) {
+      ffmpeg.setFfprobePath(ffprobePath);
+    }
+  }
 
   async stitchVisuals(clipPaths: string[], outputPath: string): Promise<string> {
     await this.videoUtilsHelper.mergeVideoFiles(clipPaths, outputPath);
